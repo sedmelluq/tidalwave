@@ -72,8 +72,7 @@ class TidalWave : AutoCloseable {
     val playbackInfo = mapper.readTree(playbackInfoResponse)
     val encodedManifest = playbackInfo["manifest"]?.textValue()
         ?: throw RuntimeException("Found no manifest in response")
-    val decodedManifest = String(base64Decode(encodedManifest))
-    val manifest = mapper.readTree(decodedManifest)
+    val manifest = mapper.readTree(base64Decode(encodedManifest))
 
     return PlaybackInfo(
         manifest["urls"]?.firstOrNull()?.textValue()
