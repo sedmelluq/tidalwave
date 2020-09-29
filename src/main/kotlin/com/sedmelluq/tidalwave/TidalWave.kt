@@ -40,6 +40,10 @@ class TidalWave : AutoCloseable {
     httpClient.close()
   }
 
+  private companion object {
+    private val mapper = ObjectMapper()
+  }
+
   private val httpClient = HttpClientBuilder.create().build()
 
   private val masterSecretKey = SecretKeySpec(
@@ -65,11 +69,11 @@ class TidalWave : AutoCloseable {
   )
 
   private fun decodePlaybackInfo(playbackInfoResponse: ByteArray): PlaybackInfo {
-    val playbackInfo = ObjectMapper().readTree(playbackInfoResponse)
+    val playbackInfo = mapper.readTree(playbackInfoResponse)
     val encodedManifest = playbackInfo["manifest"]?.textValue()
         ?: throw RuntimeException("Found no manifest in response")
     val decodedManifest = String(base64Decode(encodedManifest))
-    val manifest = ObjectMapper().readTree(decodedManifest)
+    val manifest = mapper.readTree(decodedManifest)
 
     return PlaybackInfo(
         manifest["urls"]?.firstOrNull()?.textValue()
